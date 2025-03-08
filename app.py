@@ -22,7 +22,11 @@ def get_number_info():
         return jsonify({"error": "Phone number required"}), 400
 
     try:
-        check_number = phonenumbers.parse(number)
+        # Ensure number is in international format
+        if not number.startswith('+'):
+            return jsonify({"error": "Please enter the number with country code (e.g., +91XXXXXXXXXX)"}), 400
+        
+        check_number = phonenumbers.parse(number, None)  # None ensures it detects automatically
         number_location = geocoder.description_for_number(check_number, "en")
         service_provider = carrier.name_for_number(check_number, "en")
 
@@ -55,7 +59,7 @@ def get_number_info():
             "flag": flag,
             "latitude": lat,
             "longitude": lng,
-            "map_url": f"https://your-render-app-url.onrender.com/map"
+            "map_url": f"https://infotoazr.onrender.com/map"
         })
 
     except Exception as e:
@@ -71,3 +75,4 @@ def get_map():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
+    
